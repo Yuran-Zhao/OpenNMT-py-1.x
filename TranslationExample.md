@@ -1,14 +1,9 @@
-# OpenNMT-py-1.x
-A copy of OpenNMT-py version 1.x, which can be used to further modification.
 
-Current README.md of OpenNMT-py can be found [here](https://github.com/OpenNMT/OpenNMT-py/blob/master/README.md).
+# Translation Examples
 
-## Translation Examples
+## 1.Reproduce WMT14-de-en Result in [Attention is All You Need](https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)
 
-I provide several [tutorial](./TranslationExample.md) that you can reproduce the original results.
-<!-- ### Reproduce WMT14-de-en Result in [Attention is All You Need](https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf)
-
-#### 1. Prepare the data
+### 1) Prepare the data
 
 I refer to the [script](https://github.com/OpenNMT/OpenNMT-py/blob/master/examples/scripts/prepare_wmt_data.sh) provided by OpenNMT-py. The key steps of downloading dataset is as follows:
 
@@ -40,7 +35,7 @@ cd test && ls | grep -v '.*deen\|.*ende' | xargs rm
 cd .. && rm test-filtered.tgz test.tgz && cd ..
 ```
 
-#### 2. Preprocess the data
+### 2. Preprocess the data
 
 I use SentencePiece, an unsupervised text tokenizer of Google, to preprocess the data. You can get the concrete method of installation from [here](https://github.com/google/sentencepiece#installation).
 
@@ -103,7 +98,7 @@ python ../OpenNMT-py/preprocess.py \
 - `-overwrite` is used to overwrite the already exist data files.
 - `-lower` used to convert the data into lower format.
 
-#### 3. Train the translation model
+### 3. Train the translation model
 
 We use train a typical Transformer model by following parameters.
 
@@ -124,7 +119,7 @@ python ../OpenNMT-py/train.py -data $DATA_PATH -save_model $MODEL_PATH \
 **NOTE**:
 - We set `-share_embeddings` as what original paper said.
 
-#### 4. Translate
+### 4. Translate
 
 When the training finished, we can obtain the final translation results through `translate.py`.
 
@@ -162,7 +157,7 @@ for checkpoint in $MODEL_PATH/wmt14-de-en_step*.pt; do
 done
 ```
 
-#### 5. Evaluate
+### 5. Evaluate
 
 I use SacreBLEU to obtain comparable BLEU scores. You can find the installation and other tutorials [here](https://github.com/mjpost/sacrebleu#quick-start).
 
@@ -180,4 +175,4 @@ done
 
 ##### TODO: averaging models?
 
-I train the Transformer model on 2 Nvidia 1080Ti and get a BLEU ``.  -->
+I train the Transformer model on 2 Nvidia 1080Ti and get a BLEU ``. 
