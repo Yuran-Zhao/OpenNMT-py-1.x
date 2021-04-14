@@ -1,4 +1,4 @@
-DATA_PATH=/home/zyr/Projects/Graduation-Project/OpenNMT-py/data/wmt14-de-en
+DATA_PATH=../../OpenNMT-py/data/wmt14-de-en
 
 src_train=$DATA_PATH/train.de.sp
 tgt_train=$DATA_PATH/train.en.sp

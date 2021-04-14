@@ -1,6 +1,6 @@
 # export CUDA_VISIBLE_DEVICES=0,1
 
-BASE_PATH=/home/zyr/Projects/Graduation-Project/OpenNMT-py
+BASE_PATH=../../OpenNMT-py
 DATA_PATH=$BASE_PATH/data/wmt14-de-en/onmt
 MODEL_PATH=$BASE_PATH/checkpoints/wmt14-de-en
 

@@ -1,5 +1,5 @@
 # onmt_translate -model /home/zyr/Projects/Graduation-Project/models/style-model_step_200000.pt -src ./test.txt -output ./pred.txt -replace_unk -verbose
-BASE_PATH=~/Projects/Graduation-Project/OpenNMT-py
+BASE_PATH=../../OpenNMT-py
 DATA_PATH=$BASE_PATH/data
 MODEL_PATH=$BASE_PATH/checkpoints
 

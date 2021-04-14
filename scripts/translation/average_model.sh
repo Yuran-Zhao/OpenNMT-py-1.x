@@ -1,4 +1,4 @@
-BASE_PATH=~/Projects/Graduation-Project/OpenNMT-py
+BASE_PATH=../../OpenNMT-py
 MODEL_PATH=$BASE_PATH/checkpoints
 
 python ../OpenNMT-py/average_models.py \
