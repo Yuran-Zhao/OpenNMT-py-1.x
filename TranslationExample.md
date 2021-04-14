@@ -7,7 +7,7 @@
 
 I refer to the [script](https://github.com/OpenNMT/OpenNMT-py/blob/master/examples/scripts/prepare_wmt_data.sh) provided by OpenNMT-py. The key steps of downloading dataset is as follows:
 
-```
+```shell
 echo "Downloading and extracting Commoncrawl data (919 MB) for training..."
 wget --trust-server-names http://www.statmt.org/wmt13/training-parallel-commoncrawl.tgz
 tar zxvf training-parallel-commoncrawl.tgz
@@ -35,13 +35,22 @@ cd test && ls | grep -v '.*deen\|.*ende' | xargs rm
 cd .. && rm test-filtered.tgz test.tgz && cd ..
 ```
 
-### 2. Preprocess the data
+Actually, we can just run the above [script](https://github.com/OpenNMT/OpenNMT-py/blob/master/examples/scripts/prepare_wmt_data.sh) provided by OpenNMT-py directly. Due to it has already set the condition to `false`, we will not get a SentencePiece Model. 
+
+After that, I concatenate the files that belong to the same language to a single file for convenience.
+
+```shell
+cat commoncrawl.de-en.de europarl-v7.de-en.de news-commentary-v11.de-en.de > train.de
+cat commoncrawl.de-en.en europarl-v7.de-en.en news-commentary-v11.de-en.en > train.en
+```
+
+### 2) Preprocess the data
 
 I use SentencePiece, an unsupervised text tokenizer of Google, to preprocess the data. You can get the concrete method of installation from [here](https://github.com/google/sentencepiece#installation).
 
 ##### First, we should train on the raw dataset to obtain a tokenization model. 
 
-```
+```shell
 sl=de
 tl=en
 vocab_size=32000
@@ -68,7 +77,7 @@ rm -rf $tmp_train
 
 ##### After that, we tokenize the raw data by model we've trained. The commands are shown below.
 
-```
+```shell
 sl=de
 tl=en
 DATA_PATH=$1
@@ -83,7 +92,7 @@ done
 
 ##### Last, we run `preprocess.py` to process the dataset
 
-```
+```shell
 python ../OpenNMT-py/preprocess.py \
     -train_src $src_train -train_tgt $tgt_train \
     -valid_src $src_valid -valid_tgt $tgt_valid \
@@ -98,11 +107,11 @@ python ../OpenNMT-py/preprocess.py \
 - `-overwrite` is used to overwrite the already exist data files.
 - `-lower` used to convert the data into lower format.
 
-### 3. Train the translation model
+### 3) Train the translation model
 
 We use train a typical Transformer model by following parameters.
 
-```
+```shell
 export CUDA_VISIBLE_DEVICES=0,1
 python ../OpenNMT-py/train.py -data $DATA_PATH -save_model $MODEL_PATH \
     -layers 6 -rnn_size 512 -word_vec_size 512 -transformer_ff 2048 -heads 8 \
@@ -119,13 +128,13 @@ python ../OpenNMT-py/train.py -data $DATA_PATH -save_model $MODEL_PATH \
 **NOTE**:
 - We set `-share_embeddings` as what original paper said.
 
-### 4. Translate
+### 4) Translate
 
 When the training finished, we can obtain the final translation results through `translate.py`.
 
 ##### First, get the generating results of model.
 
-```
+```shell
 for checkpoint in $MODEL_PATH/wmt14-de-en_step*.pt; do
     echo "# Translating with checkpoint $checkpoint"
     base=$(basename $checkpoint)
@@ -143,7 +152,7 @@ done
 
 ##### Secondly, use the sentencepiece model to detokenize the translation results.
 
-```
+```shell
 for checkpoint in $MODEL_PATH/wmt14-de-en_step*.pt; do
     base=$(basename $checkpoint)
     suffix=${base##*_}
@@ -157,13 +166,13 @@ for checkpoint in $MODEL_PATH/wmt14-de-en_step*.pt; do
 done
 ```
 
-### 5. Evaluate
+### 5) Evaluate
 
 I use SacreBLEU to obtain comparable BLEU scores. You can find the installation and other tutorials [here](https://github.com/mjpost/sacrebleu#quick-start).
 
-And commands I used is as follows:
+And commands I used are as follows:
 
-```
+```shell
 for checkpoint in $MODEL_PATH/wmt14-de-en_step*.pt; do
     echo "$checkpoint"
     base=$(basename $checkpoint)
@@ -173,6 +182,16 @@ for checkpoint in $MODEL_PATH/wmt14-de-en_step*.pt; do
 done
 ```
 
-##### TODO: averaging models?
+### 6) Average
 
-I train the Transformer model on 2 Nvidia 1080Ti and get a BLEU ``. 
+I use `average_models.py` in OpenNMT-py to get the average result. The specific commands are shown below:
+
+```shell
+python ../OpenNMT-py/average_models.py \
+		-m $MODEL_PATH/wmt14-de-en_step_1*0000.pt \
+		-o $MODEL_PATH/wmt14-de-en_step_average.pt
+```
+
+### 7) Result
+
+I train the Transformer model on 2 Nvidia 1080Ti and get a `BLEU = 28.4` by averaging last 10 checkpoints finally.  
